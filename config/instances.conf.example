@@ -2,13 +2,14 @@
 #
 #   name | bundle id | profile dir | icon hue (degrees) | env (optional)
 #
-# env        optional KEY=VALUE pairs, separated by ';', exported before the app
-#            starts. A .app does NOT inherit your shell environment, so this is
-#            the only way to give an instance its own CLAUDE_CONFIG_DIR -- which
-#            is what Claude Code (including the desktop app's agent mode) reads
-#            hooks from. Leading ~ is expanded.
+# env        subscription mode: only CLAUDE_CONFIG_DIR=path is supported.
+#            Leading ~ is expanded as data. Provider/API keys, endpoint, proxy
+#            and runtime overrides are rejected. Never put tokens here.
+#            The child starts with a minimal environment. Code's own shell,
+#            project, local and managed settings can still add configuration.
 #
-# name       becomes the app "/Applications/Claude <name>.app" and its selector
+# name       ASCII letter followed by letters/digits/hyphen/underscore, max 64;
+#            becomes the app "/Applications/Claude <name>.app" and its selector
 #            (lowercased) for claude-apps-refresh.sh
 # bundle id  must be unique per instance; changing it later forces a re-login
 # profile    each instance MUST have its own; two instances sharing one profile
@@ -17,6 +18,20 @@
 #            · 275 purple · 320 pink   (icon is generated on first build)
 #
 # Add a line, run `claude-apps-refresh.sh`, and the new instance is built.
+# Keep this file inside your home, owned by you, with no group/other write
+# permissions or custom allow ACLs on it or its ancestors. Do not run with sudo.
+# Desktop and Code paths cannot overlap, including ancestor/descendant or case
+# aliases. Supported legacy paths are flat, printable-ASCII Claude/Claude-*
+# directories in ~/Library/Application Support and ~/.claude/.claude-* for Code.
+# Arbitrary home/system directories, writable ancestors and custom allow ACLs
+# are refused. Missing CLAUDE_CONFIG_DIR means ~/.claude (one instance only).
+# --list prints variable names only. The launcher refuses all caller arguments
+# and refuses inherited proxy variables instead of silently bypassing a proxy.
+#
+# New profiles can use managed UUID paths (generate a fresh ID for each):
+# ~/Library/Application Support/Multi Claude Desktop/Profiles/<UUID>/desktop
+# ~/Library/Application Support/Multi Claude Desktop/Profiles/<UUID>/code
+# Existing histories are not moved or copied automatically.
 
 Personal   | com.example.claude-personal   | ~/Library/Application Support/Claude            | 142 |
 Enterprise | com.example.claude-enterprise | ~/Library/Application Support/Claude-Enterprise | 212 | CLAUDE_CONFIG_DIR=~/.claude-work

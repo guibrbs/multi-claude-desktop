@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "be0fd116056fb26d71ef7a959b5af2bf2c95ec81",
+  "time_utc": "2026-10-17T04:02:47.859780+00:00",
+  "fixture_tests": {
+    "count": 41,
+    "result": "passed",
+    "architecture": "arm64",
+    "macos": "27.0",
+    "scope": "Offline fixture suite; signatures and process observation mocked."
+  },
+  "real_build_checks": [
+    {
+      "name": "original_identity_before",
+      "exit": 0
+    },
+    {
+      "name": "original_gatekeeper",
+      "exit": 0
+    },
+    {
+      "name": "build",
+      "exit": 0
+    },
+    {
+      "name": "build_verify",
+      "exit": 0
+    },
+    {
+      "name": "rebuild",
+      "exit": 0
+    },
+    {
+      "name": "rebuild_verify",
+      "exit": 0
+    },
+    {
+      "name": "original_identity_after",
+      "exit": 0
+    }
+  ],
+  "source_app_version": "2.42304.0",
+  "source_critical_files_unchanged": true,
+  "tested_code_sha256": {
+    "bin/claude-apps-refresh.sh": "b00a331e4c8247b45a01cbbf54c0c7c375a8c1599291abb060395fe11cfcba87",
+    "bin/claude-clear-caches.sh": "29b3cec2f15a573969632fd1fe8869b48ff3ceb528ba647662248be3b7c5f9a7",
+    "bin/claude-instance-check.sh": "b0faccbc43a758010cf2a2d2d7ee2ea0008ab7f94520fb99d443b3bb8795a27a",
+    "bin/claude-instances-common.sh": "2446669a54dcd4e897675febbf594c2811965db679c18c15414ab90140fc1dfd",
+    "bin/claude-recolor-icon.sh": "95ad7aafcdef7bb388a60f02585f1a6e8fe2eb815ff66218fa67f7655799378a",
+    "bin/claude-stale-check.sh": "481244160f7017c3a987c40d0edb120264c2e73184898043970889337d799809"
+  },
+  "fixed_baseline_cases": [
+    "Sensitive environment keys refused in config",
+    "Synthetic inherited API/provider/runtime values absent from fixture child",
+    "Inherited proxies refuse launch instead of silent bypass",
+    "Caller flags and URI arguments refused",
+    "System, arbitrary-home, nested and cross-type data paths refused",
+    "Managed UUID locations accepted",
+    "Writable ancestors and custom allow ACLs refused",
+    "Unicode legacy aliases refused",
+    "Root or unknown user identity refused",
+    "Symlinked icon directories/masters and linked watchdog logs refused"
+  ],
+  "vendor_executable_launched": false,
+  "account_login_performed": false,
+  "keychain_accessed": false,
+  "installed_apps_or_profiles_modified": false,
+  "not_established": [
+    "Graphical Code two-account/SSO independence",
+    "Native unchanged-app GUI mode",
+    "Resource provenance after adversarial local re-signing",
+    "Atomic/crash-durable publication",
+    "Isolation against another process of the same user",
+    "CI execution until remote checks complete"
+  ],
+  "existing_Personal_Trabalho_config_readonly_validation": "passed; listing and path/permission checks only, no app launch or profile-content reads"
+}

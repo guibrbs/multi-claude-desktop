@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "architecture": "arm64",
+  "source_version": "2.42304.0",
+  "electron_declared_version": "44.7.2",
+  "production_runtime_implementation": "b938c7dcd90d755aa1457c0118bb7884440a082c",
+  "production_toolset_or_installed_duo_changed": false,
+  "original_source_content_unchanged_during_preparations": true,
+  "experiments": [
+    {
+      "method": "bundle_name_and_four_helper_renames",
+      "name": "Claude Duo Probe cf9613b4",
+      "static_checks": "passed",
+      "entries_compared": 4964,
+      "executable_payloads_compared": 5,
+      "asar_unchanged": true,
+      "additional_ad_hoc_helper_bundles": 4,
+      "runtime_result": "failed_namespace_separation",
+      "observed_keychain_service": "Claude Safe Storage",
+      "observation_source": "user_screenshots_and_denial_report",
+      "keychain_access_user_action": "deny",
+      "documents_permission_prompt_observed": true,
+      "documents_permission_action": "not_separately_confirmed",
+      "sign_in_completed": false,
+      "closed_and_native_idle_confirmed": true
+    },
+    {
+      "method": "package_product_name",
+      "name": "Claude Duo Probe bc54a4da",
+      "static_checks": "passed_before_and_after_gui",
+      "asar_comparison": {
+        "header_sha256": "b08469c802b8ee4c2ef7b5ff7fa974a6748362ac5134341231109f8407b2805a",
+        "members_checked": 508,
+        "changed_member": "package.json",
+        "changed_semantic_field": "productName",
+        "javascript_payloads_unchanged": true,
+        "other_payload_bytes_unchanged": true,
+        "entries_compared": 4964,
+        "helper_bundles_byte_unchanged": 4,
+        "helper_signatures_preserved": true,
+        "main_unsigned_payload_unchanged": true
+      },
+      "vendor_helpers_original_signatures_preserved": true,
+      "runtime_result": "opened_without_permission_prompts",
+      "user_confirmed_no_permission_prompts": true,
+      "observed_ui": "Desktop signed-out sign-in screen (claude.ai/login in the app window), same state recorded for the previous Duo",
+      "own_keychain_service_attributes": {
+        "service": "Claude Duo Probe bc54a4da Safe Storage",
+        "status": 0,
+        "exact_service_attributes_found": true,
+        "secret_data_requested": false,
+        "authentication_ui": "fail"
+      },
+      "sign_in_completed": false,
+      "closed_and_native_idle_confirmed": true,
+      "prepared_source_sha256": {
+        "prepare-product-name-probe.py": "aa43498e4b6c4a597e36c59d5ec5b803aac755ed18dccfd648d199191a5835b6",
+        "asar_product_name.py": "c149c394cbccd3805a1279ff3f0f9ce9aaf7de2221985f79032da05de76a5990",
+        "prepare-namespace-probe.py": "123a0394c9e33f9c51adc73f58a41dc1f0117bd9ff48114c243c911a1f9dcdb9"
+      },
+      "observed_ui_correction": {
+        "date": "2026-10-17",
+        "earlier_claim": "web sign-in page rather than previous Desktop introduction",
+        "status": "not_confirmed"
+      },
+      "relaunch_by_agent": {
+        "time_local": "2026-10-17T22:07",
+        "sign_in_cookie_present": false,
+        "permission_prompts": "none",
+        "safe_storage_warning": false,
+        "cookie_banner_answered": false,
+        "clean_quit": true
+      }
+    }
+  ],
+  "preparation_refusal": {
+    "method": "package_product_name",
+    "stage": "before_app_copy",
+    "cause": "parser initially rejected exact shared ASAR extents",
+    "inspected_overlapping_pairs": 25,
+    "all_pairs_exact_shared_extents": true,
+    "correction": "permit exact non-package aliases; reject partial overlaps and package aliases",
+    "vendor_launched_by_refused_attempt": false
+  },
+  "tests": {
+    "new_offline_tests": 25,
+    "ci_inventory": {
+      "profiles": 86,
+      "storage": 59,
+      "toolsets": 25,
+      "total": 170,
+      "complete_and_disjoint": true
+    },
+    "full_local_suite": "pending",
+    "remote_suite_for_this_change": "not_claimed"
+  },
+  "interpretation": {
+    "helper_only_hypothesis": "insufficient",
+    "product_name_hypothesis": "supported_by_startup_and_own_service_attributes",
+    "user_agent_explanation_for_ui_change": "inference_from_corresponding_upstream_source; not yet verified",
+    "account_independence_established": false,
+    "code_account_tested": false,
+    "release_approved": false
+  },
+  "remaining": [
+    "Desktop_flow_compatibility",
+    "production_native_integrity_integration",
+    "reopen_and_rebuild_behavior",
+    "email_login_callback",
+    "actual_Code_account_identity",
+    "two_account_continuity",
+    "other_architecture_runtime"
+  ],
+  "secrets_collected": false,
+  "keychain_access_granted_by_agent": false,
+  "keychain_entries_deleted": false,
+  "startup_log_comparison": {
+    "previous_duo_b938c7d": {
+      "main_process_stall_ms": 88692,
+      "safe_storage_available": false
+    },
+    "helper_rename_probe": {
+      "main_process_stall_ms": 40968,
+      "safe_storage_available": false
+    },
+    "product_name_probe": {
+      "main_process_stall_ms": null,
+      "safe_storage_warning": false,
+      "launches": 2
+    },
+    "source": "local main.log, signed-out launches only; no secrets read"
+  }
+}

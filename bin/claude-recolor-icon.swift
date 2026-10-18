@@ -21,7 +21,8 @@ func fail(_ msg: String) -> Never {
 }
 
 let args = CommandLine.arguments
-guard args.count == 4, let hueDeg = Double(args[3]) else {
+guard args.count == 4, let hueDeg = Double(args[3]),
+      hueDeg.isFinite, hueDeg >= 0, hueDeg <= 359 else {
     fail("usage: claude-recolor-icon.swift <input.png> <output.png> <hueDegrees>")
 }
 let inURL = URL(fileURLWithPath: args[1])

@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/bash -p
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
 # claude-recolor-icon.sh <hue-degrees> <output.icns>
 #
 #   blue 212 · green 142 · red 0 · orange 30 · yellow 55
@@ -16,9 +18,14 @@ set -euo pipefail
 
 HUE="${1:-}"; OUT="${2:-}"
 if [ -z "$HUE" ] || [ -z "$OUT" ]; then
-    sed -n '2,8p' "$0" | sed 's/^# \{0,1\}//'
+    printf 'usage: claude-recolor-icon.sh HUE OUTPUT.icns\n' >&2
     exit 2
 fi
+[[ "$HUE" =~ ^[0-9]{1,3}$ ]] && [ "$((10#$HUE))" -le 359 ] || {
+    echo 'error: hue must be an integer from 0 to 359' >&2
+    exit 2
+}
+umask 077
 
 SRC="/Applications/Claude.app/Contents/Resources/electron.icns"
 SWIFT_SRC="$(dirname "$0")/claude-recolor-icon.swift"

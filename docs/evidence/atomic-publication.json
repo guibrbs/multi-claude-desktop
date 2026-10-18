@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "f7d957a8a28073b8681f114d29024fa9e75dea7a",
+  "time_utc": "2026-10-17T04:26:14.425895+00:00",
+  "local_fixture_suite": {
+    "count": 60,
+    "native_transaction_tests": 14,
+    "result": "passed",
+    "architecture": "arm64",
+    "macos": "27.0",
+    "scope": "Disposable fixtures only; signature/process observations mocked in hardening tests, native rename/flock/fsync/ACL calls real in transaction tests."
+  },
+  "fault_injection": "Compile-time test macro only; production build tested with injection variables present and ignores them.",
+  "native_fixture_results": {
+    "replacement_atomic_exchange": true,
+    "exclusive_first_install": true,
+    "concurrent_destination_not_overwritten": true,
+    "sigkill_before_exchange_prepared_layout": true,
+    "sigkill_after_exchange_committed_layout": true,
+    "sigkill_after_first_install_committed_layout": true,
+    "kernel_lock_released_after_sigkill": true,
+    "unsupported_operation_has_no_weaker_fallback": true,
+    "linked_or_malformed_journal_refused": true,
+    "unknown_layout_not_replayed_or_deleted": true,
+    "out_of_range_signed_noncanonical_and_extra_byte_records_refused": true
+  },
+  "source_app_version": "2.42304.0",
+  "real_build_checks": [
+    {
+      "name": "original_identity_before",
+      "exit": 0
+    },
+    {
+      "name": "original_gatekeeper",
+      "exit": 0
+    },
+    {
+      "name": "build",
+      "exit": 0
+    },
+    {
+      "name": "build_verify",
+      "exit": 0
+    },
+    {
+      "name": "rebuild",
+      "exit": 0
+    },
+    {
+      "name": "rebuild_verify",
+      "exit": 0
+    },
+    {
+      "name": "previous_bundle_signature",
+      "exit": 0
+    },
+    {
+      "name": "committed_recovery_inspection",
+      "exit": 0
+    },
+    {
+      "name": "original_identity_after",
+      "exit": 0
+    }
+  ],
+  "source_critical_files_unchanged": true,
+  "previous_bundle_inode_retained": true,
+  "previous_critical_file_hashes_unchanged": true,
+  "tested_code_sha256": {
+    "bin/claude-apps-refresh.sh": "f0ed919efd039d0904c20edf5b92c33f7ce781bf3ee06505867ae533cff8c0e0",
+    "bin/claude-build-worker.sh": "11168b70f67ef8b9b5a73874fb6294e4936267bfdf65e0641e6e91c3e1430032",
+    "bin/claude-clear-caches.sh": "29b3cec2f15a573969632fd1fe8869b48ff3ceb528ba647662248be3b7c5f9a7",
+    "bin/claude-instance-check.sh": "b0faccbc43a758010cf2a2d2d7ee2ea0008ab7f94520fb99d443b3bb8795a27a",
+    "bin/claude-instances-common.sh": "a970f6eda96ae52ae09031b3292d76225d88dfdfc66478604a0198fcd4b46ff0",
+    "bin/claude-recolor-icon.sh": "95ad7aafcdef7bb388a60f02585f1a6e8fe2eb815ff66218fa67f7655799378a",
+    "bin/claude-recolor-icon.swift": "55fb1aafdfbd38690cf63c0e9d43b052acbb6e858b79d28ddcd8938a681dbb64",
+    "bin/claude-stale-check.sh": "481244160f7017c3a987c40d0edb120264c2e73184898043970889337d799809",
+    "bin/claude-transaction.c": "d36220b0028e8778cb0c61176455f40c471502fb642f4fb0cdac790878b13d77"
+  },
+  "vendor_executable_launched": false,
+  "claude_credentials_accessed": false,
+  "installed_apps_or_profiles_modified": false,
+  "not_established": [
+    "Power-loss durability or recursive app-data flushing",
+    "Compatible profile/Keychain/project restore or downgrade",
+    "Automatic retention pruning",
+    "LaunchServices routing with retained copies",
+    "GUI Code two-account login/SSO independence",
+    "Isolation against same-user processes, other administrators or root",
+    "Full resource provenance after adversarial local re-signing"
+  ]
+}

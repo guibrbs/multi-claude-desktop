@@ -1,8 +1,44 @@
 # Multiple Claude Desktop Instances (macOS)
 
-Run as many Claude Desktop instances as you like — personal, work, a client account, a
-scratch profile — side by side, each with its own account, its own profile, and its own
-coloured Dock icon.
+This local revision includes script hardening and regression tests. Read
+[HARDENING.md](HARDENING.md) before installing; it describes stricter config
+validation, safe rebuild behavior, migration, and the signing/isolation limits
+that remain. Copy the shared `claude-instances-common.sh` with the other scripts.
+The [deeper limitation review and roadmap](docs/LIMITATIONS_AND_ROADMAP.md)
+includes controlled evidence and the proposed GUI launch architecture; it does
+not claim that all remaining limitations have been fixed.
+The [current execution roadmap in Portuguese](docs/ROADMAP_PT_BR.md) lists the
+remaining work, release criteria and the steps that need account login. The
+hardened branch is still experimental; graphical two-account Code behavior has
+not been validated.
+**The first live Duo launch is blocked:** it requested access to the existing
+`Claude Safe Storage` Keychain entry; the user denied access before signing in.
+See the [finding and resumption criteria](docs/KEYCHAIN_FIRST_LAUNCH_PT_BR.md).
+The current candidate is not approved for daily two-account use.
+Two [namespace experiments](docs/KEYCHAIN_NAMESPACE_EXPERIMENTS_PT_BR.md) now
+distinguish a failed bundle/helper rename from a product-name prototype that
+opened without permission prompts and had a distinct named Keychain item.
+The latter still needs Desktop-flow validation and production integration;
+the installed Duo has not been replaced.
+The preferred deployment is now **the official Claude app plus one managed
+copy**, each using a different account and Desktop/Code data pair. The original
+keeps its official updater; automatic detection and rebuilding of the copy are
+planned in the roadmap. Current watchdog checks only notify. This documentation
+does not change an existing installation or disable legacy copies.
+The copy is named **Claude Duo**. The [versioned tool installer](docs/TOOLSET_INSTALLATION.md)
+now stages/verifies complete pinned toolsets and activates them atomically;
+it does not migrate or rename existing apps or profiles.
+The [graphical validation plan](docs/GUI_VALIDATION_PT_BR.md) uses the existing
+macOS session, new Duo data directories and an opt-in private `~/Applications`
+destination. No additional macOS user is requested. The original's existing
+profile participates in GUI testing; new Duo directories are not OS isolation.
+The [configuration reuse proposal](docs/PROFILE_REUSE_PT_BR.md) covers importing
+preferences, MCP definitions and plugin selections while keeping authentication
+separate; the importer is not implemented yet.
+
+The intended workflow is side-by-side Claude Desktop instances with distinct
+accounts, profile directories and Dock icons. Separate directories are implemented;
+independent authentication still requires the blocked GUI validation above.
 
 Claude Desktop accepts Electron's `--user-data-dir`, so isolating a second profile is
 easy. Giving each instance its own **Dock icon** is not: a thin wrapper `.app` can't do
@@ -16,15 +52,22 @@ Built on Apple Silicon with an APFS volume. On Intel, drop the `arch -arm64` pin
 
 ## Daily use
 
-| Click | App | Profile |
-|---|---|---|
-| 🟢 green | `/Applications/Claude Personal.app` | `~/Library/Application Support/Claude` |
-| 🔵 blue | `/Applications/Claude Enterprise.app` | `~/Library/Application Support/Claude-Enterprise` |
-| 🟠 coral | `/Applications/Claude.app` | **don't click it** |
+Target layout for original + one copy (graphical login validation is pending):
 
-**Keep only the coloured apps in your Dock.** Stock `Claude.app` is the *source* the
-copies are built from, plus the thing that downloads Claude updates. Launching it starts
-another instance on the personal profile — two processes on one database.
+| App | Desktop profile | Code configuration |
+|---|---|---|
+| `/Applications/Claude.app` | `~/Library/Application Support/Claude` | `~/.claude` |
+| `/Applications/Claude Duo.app` | `~/Library/Application Support/Claude-Duo` | `~/.claude-duo` |
+
+Use the original for one account and the copy for the other. Reserve both
+default data directories for the original; only the copy belongs in the managed
+instance configuration. The source app is never a rebuild destination.
+
+**Legacy installations:** a `Claude Personal.app` copy may share the original's
+default profile. Do not run that legacy copy and the original together. Review
+the transition before changing existing configuration, shortcuts or apps. The
+explicit `@mode original-copy` policy now reserves the defaults and requires
+exactly one managed copy. Headerless configs retain the older deployment.
 
 ```bash
 claude-instance-check.sh      # health check
@@ -33,39 +76,62 @@ claude-apps-refresh.sh --list # what's configured
 
 ---
 
-## Adding an instance
+## Configure original + Claude Duo
 
 Instances are defined in `~/.config/claude-instances/instances.conf`:
 
 ```
 # name | bundle id | profile dir | icon hue | env (optional)
-Personal   | com.example.claude-personal   | ~/Library/Application Support/Claude            | 142 |
-Enterprise | com.example.claude-enterprise | ~/Library/Application Support/Claude-Enterprise | 212 | CLAUDE_CONFIG_DIR=~/.claude-work
+@mode original-copy
+Duo | com.example.claude-duo | ~/Library/Application Support/Claude-Duo | 212 | CLAUDE_CONFIG_DIR=~/.claude-duo
 ```
 
-Add a line and rebuild — the icon is generated automatically from the hue:
+This example lists only the managed copy. The original keeps its normal
+default directories and is not listed for rebuilding.
 
-```bash
-echo 'Client | com.example.claude-client | ~/Library/Application Support/Claude-Client | 320' \
-  >> ~/.config/claude-instances/instances.conf
-claude-apps-refresh.sh client
-```
-
-That produces `/Applications/Claude Client.app` with a pink icon, its own bundle
-identity, and an empty profile ready to sign in to. Roughly 2 MB and a few seconds.
+The mode directive must appear once before instance rows. It rejects the
+original's default Desktop/Code paths, physical/case aliases and multiple copies.
+Existing installation/config remains unchanged until reviewed migration. A
+policy change needs a reviewed rebuild; verification rejects an older launcher's
+policy. Multiple managed copies remain a legacy mode, selected explicitly with
+`@mode legacy-copies` or retained by headerless configs.
 
 Hues: `0` red · `30` orange · `55` yellow · `142` green · `175` teal · `212` blue ·
 `275` purple · `320` pink.
 
 ### Per-instance environment
 
-The optional 5th column exports environment variables before the app starts —
-semicolon-separated `KEY=VALUE` pairs, leading `~` expanded.
+The optional 5th column supports **only `CLAUDE_CONFIG_DIR=path`** in this
+subscription-account mode, with leading `~` expanded as data. Provider/API keys,
+endpoint, proxy and runtime overrides are rejected. Never store tokens here.
+Every additional Code account must use a distinct `CLAUDE_CONFIG_DIR`; otherwise
+configuration validation fails. In original-copy mode the default `~/.claude`
+is reserved for the original; the legacy mode allows at most one copy to use it.
+`--list` displays variable names without revealing their values.
 
-**This is the only way to give an instance its own environment.** A macOS `.app` does not
-inherit your shell environment, so `export` in `.zshrc` has no effect on a Dock launch.
-Because the variables are set before `exec`, everything the app spawns inherits them —
-including Claude Code in agent mode.
+The launcher uses privileged-mode Bash to ignore inherited startup files and
+starts the child with a minimal environment and a fixed system `PATH`. It refuses
+all caller arguments, including debug/sandbox/profile flags and URL callbacks.
+If an inherited proxy variable is present, launch fails rather than silently
+removing an approved proxy and connecting directly. Provider/proxy customization
+is not supported by this mode; use your approved Claude configuration instead.
+
+Code sessions can also load selected variables from shell initialization and
+their local environment editor/settings, so `.zshrc` is not universally
+irrelevant to GUI Code. Parent-process exports alone do not prove the effective
+configuration of every Code session. See the official
+[local environment documentation](https://code.claude.com/docs/en/desktop#local-sessions)
+and the [residual limitation analysis](docs/LIMITATIONS_AND_ROADMAP.md).
+
+Data paths must use the existing flat `~/Library/Application Support/Claude`
+or `Claude-*` layout and `~/.claude` or `.claude-*`, or managed
+`~/Library/Application Support/Multi Claude Desktop/Profiles/<UUID>/desktop`
+and `/code` directories. Legacy suffixes must be printable ASCII to avoid Unicode
+filesystem aliases. All Desktop/Code directory pairs must be disjoint. Files and
+ancestors must belong to this user, without group/other write access or custom
+allow ACLs. Standard macOS deny-delete ACLs are allowed. The config itself must
+be inside home with the same ownership/permission checks. Do not run with sudo.
+No history migration happens automatically; see [HARDENING.md](HARDENING.md).
 
 The motivating case is `CLAUDE_CONFIG_DIR`. Claude Code reads hooks from
 `$CLAUDE_CONFIG_DIR/settings.json` and stores agent-mode session history in
@@ -77,22 +143,19 @@ instance splits both.
 Enterprise | com.example.claude-enterprise | …/Claude-Enterprise | 212 | CLAUDE_CONFIG_DIR=~/.claude-work
 ```
 
-Verify it actually reached the process — a launcher that silently lost the export looks
-identical from the outside:
+Check the complete generated launcher and local signature without dumping the
+running process's environment:
 
 ```bash
-claude-apps-refresh.sh --verify                        # the export is in the launcher
-ps eww -o command= -p <pid> | tr ' ' '\n' | grep CLAUDE_CONFIG_DIR
+claude-apps-refresh.sh --verify
 ```
 
 ⚠️ **Pointing an instance at a new config dir does not bring its history along.** Agent-mode
 sessions live in `$CLAUDE_CONFIG_DIR/projects/<encoded-path>/*.jsonl`. Switch the variable
 and the app looks somewhere new — past sessions appear to vanish, though nothing is
-deleted. Copy them across before you switch, or afterwards:
-
-```bash
-cp -Rc ~/.claude/projects/<dir> ~/.claude-work/projects/
-```
+deleted. Keep existing paths until a closed-app backup and compatible migration
+have been reviewed. The [content checkpoint primitive](docs/PROFILE_CHECKPOINTS.md)
+does not migrate histories or establish that a restore is safe.
 
 Watch for a config dir that already holds a **stale copy** of the same session id: the app
 will show the older one and the newer history looks lost. Compare entry counts and last
@@ -102,8 +165,10 @@ Rules the builder enforces, because both are silently destructive:
 
 - **Bundle ids must be unique.** Two instances sharing one id are the same app to macOS.
 - **Profiles must be unique.** Two instances on one profile can corrupt it.
+- **Code config directories must be unique.** Existing symlinks are resolved;
+  dot components and paths differing only in ASCII case are rejected.
 
-Changing an instance's bundle id later forces a fresh sign-in for that instance — macOS
+Changing an instance's bundle id later can force a fresh sign-in for that instance — macOS
 treats it as a different app for keychain purposes.
 
 ### What is isolated, and what is not
@@ -126,8 +191,8 @@ unless you set it per instance. See [Per-instance environment](#per-instance-env
 
 | | Isolated per instance | Shared |
 |---|---|---|
-| Account, conversations, settings, MCP config | ✅ | |
-| Keychain / login | ✅ | |
+| Desktop profile files: conversations, settings, MCP config | Separate requested `userData` paths | Effective account independence remains unverified |
+| Keychain / login | Unverified; first live Duo launch requested the existing `Claude Safe Storage` entry and was denied | Bundle name remains `Claude`; fresh directories and a distinct bundle ID did not prevent that request |
 | Cowork files, scratch workspaces | ✅ | |
 | Claude Code hooks + agent-mode sessions | ✅ *once `CLAUDE_CONFIG_DIR` is set* | ⚠️ otherwise |
 | SSH keys, git config, the rest of your home dir | | ⚠️ always |
@@ -160,7 +225,8 @@ Screen Recording, plus a full first-run setup against an empty profile.
 ### What happens
 
 Each instance is a **point-in-time copy** of `Claude.app`, made with APFS cloning, and
-fully independent once made. When `Claude.app` updates itself, the copies **do not
+independent at the bundle-file level once made. This does not establish credential
+independence. When `Claude.app` updates itself, the copies **do not
 change** — they keep running the old version, silently and indefinitely.
 
 Worse: `Claude.app` only updates itself **when it runs**. If you only ever launch the
@@ -179,21 +245,26 @@ built at.
 # 1. Check for drift
 claude-apps-refresh.sh --status
 
-# 2. Launch STOCK Claude, let it update itself, then quit it (Cmd-Q)
-open -a "/Applications/Claude.app"
+# 2. Quit every managed copy (Cmd-Q)
 
-# 3. Quit every coloured app (Cmd-Q) -- the rebuild refuses to touch a running app
+# 3. Let the original Claude finish its official update, then quit it (Cmd-Q)
+open -a "/Applications/Claude.app"
 
 # 4. Rebuild
 claude-apps-refresh.sh
 
 # 5. Verify
-claude-apps-refresh.sh --status
+claude-apps-refresh.sh --verify
 claude-instance-check.sh
 ```
 
-Step 2 is the one people skip. Without it there is no new version to rebuild *from*, and
+Without updating stock Claude there is no new version to rebuild *from*, and
 step 4 just reproduces the same version.
+The builder requires observed Desktop apps/helpers, including the original,
+to be closed. The watchdog currently only checks and notifies; waiting for idle
+apps and automatically rebuilding the copy after an official update are planned,
+not installed behavior. Until reviewed transition, follow the configuration of
+your actual deployment rather than removing a legacy copy from this example.
 
 ### What a rebuild touches
 
@@ -202,15 +273,18 @@ step 4 just reproduces the same version.
 | Every profile (accounts, conversations, settings, MCP config) | The app bundles |
 | Instance config and icon masters | Bundle identity, launcher, signature |
 
-Profiles live **outside** the bundles, which is why rebuilding is safe. The bundle is
-disposable; the profile is the asset.
+The builder does not migrate profile contents: profiles live **outside** the
+bundles. Opening a newer app may migrate them, so retaining an older bundle
+alone does not make a later downgrade safe.
 
 ### Disk creep
 
 Each instance normally costs ~2 MB real, because APFS clone-sharing means unchanged
 files share blocks with `Claude.app`. **A Claude update breaks that sharing** — old
 blocks are retained for your copies and real usage climbs toward the full 823 MB each.
-Rebuilding re-establishes sharing and reclaims it. Another reason not to skip the refresh.
+Rebuilding re-establishes sharing for the current copies. Retained previous
+bundles still keep old blocks alive: the hardened builder does not automatically
+prune them or promise that a rebuild reclaims all old space.
 
 ```bash
 df -h /     # real usage; Finder will always claim ~825 MB per copy
@@ -218,14 +292,37 @@ df -h /     # real usage; Finder will always claim ~825 MB per copy
 
 ### If a rebuild fails partway
 
-The builder `rm -rf`s the target *before* copying, so a failure can leave an app missing.
-Your data is untouched — just re-run it:
+The hardened builder verifies a staged copy, writes an immutable private journal
+and uses a native atomic exchange for a replacement. A first install uses an
+exclusive rename that refuses to overwrite a path appearing concurrently. There
+is no delete/move fallback if the filesystem refuses the required operation.
+
+The printed `/Applications/.claude-txn.XXXXXXXX` directory holds the journal and,
+after a replacement, the previous bundle at `instance.app`. Inspect the printed
+transaction before retrying:
+
+```bash
+claude-apps-refresh.sh --recover .claude-txn.XXXXXXXX
+```
+
+This only observes the recorded layout and checks a committed launcher/signature;
+it does not restore, replay, launch or delete bundles/profiles. Unknown state fails
+closed. Later rebuilds can supersede older journal layouts. After resolving the
+reported failure, a fresh rebuild creates a new transaction:
 
 ```bash
 claude-apps-refresh.sh personal    # or any instance name, or with no argument for all
 ```
 
 If the source itself is broken, reinstall Claude, then rebuild.
+
+Rebuild/recovery, full verification/watchdog, cache cleanup and checkpoints
+require macOS 12+ and Xcode Command Line Tools. Install the whole `bin/claude-*`
+set, including all workers, C sources and the maintenance header. A shared kernel lock holds
+across the worker/children and releases on exit; do not remove its persistent
+`.claude-instances.lock` file to force another build. Old `.refresh-lock`
+directories still require inspection. Retained bundles are not automatically
+pruned or treated as safe profile downgrades; see [HARDENING.md](HARDENING.md).
 
 ### If Claude.app updates while a copy is running
 
@@ -266,12 +363,16 @@ claude-apps-refresh.sh --verify
 ```
 
 ```
-Identity check:
-  Claude Personal        ok
-  Claude Enterprise      CLOBBERED -- bundle-id=com.anthropic.claudefordesktop executable=Claude bad-signature
+Claude Personal: launcher/signature/content-record checks passed (ad-hoc copy; user-writable record; account isolation not established)
+Claude Enterprise: FAILED -- rebuild required
 ```
 
 Exit 1 if any instance was clobbered. The fix is always the same — rebuild it.
+
+Verification also requires a private full-tree build record: an added/modified
+resource followed by local re-signing still fails. Missing legacy records need
+a rebuild; no new baseline is silently trusted. See [APP_INTEGRITY.md](docs/APP_INTEGRITY.md)
+for the exact transformations and remaining user-writable-record limits.
 
 *(Reasoned from the bundle's updater machinery and signing state, not observed: at the
 time of writing there was no pending update to test against.)*
@@ -285,18 +386,18 @@ claude-instance-check.sh
 ```
 
 ```
-PID       APP                     PROFILE
-79012     Claude Personal         ~/Library/Application Support/Claude
-79210     Claude Enterprise       ~/Library/Application Support/Claude-Enterprise
-
-Instances running: 2    Distinct profiles: 2
-OK: every running instance has its own profile.
+PID      APP                      PROFILE
+79012    Claude Personal.app      /Users/you/Library/Application Support/Claude
+79210    Claude Enterprise.app    /Users/you/Library/Application Support/Claude-Enterprise
+OK: observed profiles are distinct.
 ```
 
 - **Exit 0** — healthy. One instance running is fine; that is not an error.
 - **Exit 1** — **profile collision**: two or more processes on one profile, each row
   flagged `<-- COLLISION`. Quit all but one immediately; concurrent writes to one
   LevelDB can corrupt it.
+- **Exit 2** — state unknown: process enumeration or profile inspection failed.
+  Do not interpret this as permission to rebuild or delete caches.
 
 The collision case is the whole point of the check, and it is easy to hit by accident —
 launching stock `Claude.app` while `Claude Personal` is open does it, since both default
@@ -309,15 +410,18 @@ excluding `Claude Helper` processes.
 
 ## Scripts
 
-In `~/bin` (keep it on your `PATH`).
+Legacy installations expose these in `~/bin`. The versioned installer keeps
+its own complete releases; use its dispatcher to pin one release for an
+operation. Existing `~/bin` entries remain unchanged until reviewed integration.
 
 | Script | What it does |
 |---|---|
 | `claude-instance-check.sh` | Health check; detects profile collisions |
-| `claude-apps-refresh.sh` | Build/rebuild instances. No args = all; or a name; `--status`; `--list`; `--verify` |
+| `claude-apps-refresh.sh` | Build/rebuild instances. No args = all; or a name; `--status`; `--list`; `--verify`; `--recover <transaction>` |
 | `claude-recolor-icon.sh` | Generate an icon master: `claude-recolor-icon.sh <hue> <out.icns>` |
-| `claude-stale-check.sh` | Watchdog: stale / clobbered / missing-icon across every instance |
+| `claude-stale-check.sh` | Watchdog: stale versions or broken identity/signature/launcher |
 | `claude-clear-caches.sh` | Quit an instance, delete only regenerable caches, relaunch |
+| `claude-toolset.sh` | Reviewed installer entry; verify a pinned package and activate complete toolsets; see [protocol](docs/TOOLSET_INSTALLATION.md) |
 
 ---
 
@@ -381,20 +485,20 @@ carry version and security fixes, so failing one over cosmetics is the wrong tra
 
 ## Automated checks (`claude-stale-check.sh`)
 
-A LaunchAgent (`~/Library/LaunchAgents/com.example.claude-stale-check.plist`) runs the
-watchdog **at login and every 6 hours**, across **every instance in the config**. It only
+A provided LaunchAgent template, if installed at
+`~/Library/LaunchAgents/com.example.claude-stale-check.plist`, runs the watchdog
+**at login and every 6 hours**, across **every instance in the config**. It only
 reads and reports — it never rebuilds, because the builder refuses to touch a running app
 and a background job that quits your windows mid-conversation is worse than a stale copy.
 
-It catches three silent failures:
+It catches silent version and identity failures:
 
 | | What it means |
 |---|---|
 | **STALE** | `Claude.app` updated; the copy did not, and will run the old version indefinitely |
-| **CLOBBERED** | the copy lost its bundle id, launcher, signature or env exports — usually an in-app update accepted *inside* a copy, which drops the launcher and silently sends that instance to the **default (personal) profile** |
-| **icon master missing** | the next rebuild would fall back to the stock icon |
+| **BROKEN** | missing app, changed bundle id, launcher, signature or environment — including an in-app update that replaces the launcher |
 
-Results go to `~/Library/Logs/claude-stale-check.log` as well as a notification, so the
+Results go to `~/Library/Logs/claude-instances/watchdog.log` as well as a notification, so the
 check still works if notification banners are suppressed. Run it by hand any time:
 
 ```bash
@@ -435,6 +539,8 @@ For each instance, `claude-apps-refresh.sh`:
 3. **Installs the icon**, generating it from the hue if missing.
 4. **Writes a launcher** pinning the profile and the CPU architecture.
 5. **Re-signs** the main binary and outer bundle, ad-hoc.
+6. **Publishes atomically** under a kernel lock, after syncing a private intention
+   journal. A replacement retains the previous bundle for reviewed recovery.
 
 ### Why each choice — don't "simplify" these
 
@@ -442,7 +548,7 @@ For each instance, `claude-apps-refresh.sh`:
 |---|---|
 | `cp -Rc` (clone) | ~2 MB instead of 823 MB per instance |
 | Re-sign **only** main binary + outer bundle | The binary's signature seals `Info.plist`, which we edit, so it must be re-signed. Re-signing the 381 MB Electron Framework rewrites it and destroys the clone. Mixed signatures load fine because we sign **without** hardened runtime, so library validation (which demands matching Team IDs) is off |
-| `CFBundleName` stays `"Claude"` | Electron derives the helper-app name from it. Anything else fails at launch with `FATAL: Unable to find helper app`. `CFBundleDisplayName` is what the Dock shows |
+| `CFBundleName` stays `"Claude"` | Electron uses it to locate the existing helper apps. It also influences the macOS Safe Storage service name: the first live Duo launch requested the existing `Claude Safe Storage` entry. Changing this field alone is not a validated fix. See the [blocked GUI finding](docs/KEYCHAIN_FIRST_LAUNCH_PT_BR.md) |
 | Delete `CFBundleIconName` | Points into `Assets.car` (Claude's own icon) and **outranks** `CFBundleIconFile`. Leave it and the orange icon comes back |
 | Delete `CFBundleURLTypes` | Stops copies fighting over `claude://` and `msauth://` links |
 | `arch -arm64` in the launcher | **Critical** — see below |
@@ -522,24 +628,26 @@ Run the launcher from Terminal to see the real error:
 `CFBundleIconName` came back — it outranks `CFBundleIconFile`. Rebuild. If the bundle is
 right but Finder is stale, it's the icon cache: `killall Finder`.
 
-### Profile corrupted / conversations missing
+### Profile checkpoints and missing conversations
 
-Restore a backup. These are APFS clones — free to make, instant to restore:
+Preserve the current data before changing paths or attempting repair. A newer
+app may have migrated its databases; replacing just the bundle or one directory
+does not prove safe restoration.
 
-```bash
-# quit the app first
-mv "$HOME/Library/Application Support/Claude-Enterprise" \
-   "$HOME/Library/Application Support/Claude-Enterprise.bad"
-cp -Rc "$HOME/Library/Application Support/Claude-Enterprise.backup-YYYYMMDD-HHMMSS" \
-       "$HOME/Library/Application Support/Claude-Enterprise"
-```
-
-Take one before any risky change — free and instant:
+The optional [checkpoint tool](docs/PROFILE_CHECKPOINTS.md) verifies both Desktop
+and Code directories together with the apps/other users closed:
 
 ```bash
-cp -Rc "$HOME/Library/Application Support/Claude-Enterprise" \
-       "$HOME/Library/Application Support/Claude-Enterprise.backup-$(date +%Y%m%d-%H%M%S)"
+claude-profile-checkpoint.sh create Enterprise
+claude-profile-checkpoint.sh verify Enterprise <printed-checkpoint-UUID>
 ```
+
+It publishes private verified content copies, refuses unsupported metadata and
+retains interrupted staging for inspection. Copies use full storage, may contain
+sensitive credentials/history and are not encrypted by this tool. Keychain and
+external projects are excluded. Repeated observations cannot block external
+writers. There is no restore command or automatic downgrade; a compatible restore
+into fresh paths still needs a separate implementation and validation.
 
 ### Removing an instance
 
@@ -582,13 +690,16 @@ claude-instance-check.sh
 |---|---|
 | Instance config | `~/.config/claude-instances/instances.conf` |
 | Icon masters | `~/.local/share/claude-instances/<name>.icns` |
-| Scripts | `~/bin/claude-*.sh` |
-| Profile backups | `~/Library/Application Support/Claude*.backup-*` |
+| Private app content records | `~/.local/share/claude-instances/integrity/<UUID>/record.txt` |
+| Scripts and native helper sources | `~/bin/claude-*` |
+| Verified content checkpoints | `~/Library/Application Support/Multi Claude Desktop/Checkpoints/<UUID>` |
+| Legacy backups (unverified; not imported) | `~/Library/Application Support/Claude*.backup-*` |
 
 `/Applications/Claude.app` is **never modified** — every script only reads it:
 
 ```bash
-codesign --verify --strict /Applications/Claude.app && echo "untouched"
+codesign --verify --strict -R '=anchor apple generic and certificate leaf[subject.OU] = "Q6L2SF6YDW" and identifier "com.anthropic.claudefordesktop"' /Applications/Claude.app
+spctl --assess --type execute /Applications/Claude.app
 ```
 
 ---

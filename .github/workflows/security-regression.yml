@@ -1,0 +1,54 @@
+name: Security regression fixtures
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-fixtures-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fixtures:
+    name: Fixtures (${{ matrix.os }}, ${{ matrix.group }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-15-intel]
+        group: [profiles, storage, toolsets]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - name: Check out reviewed source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Record fixture platform
+        run: |
+          sw_vers
+          uname -m
+          /bin/bash --version
+          python3 --version
+      - name: Check Bash syntax
+        run: |
+          for script in bin/*.sh; do
+            /bin/bash -n "$script" || exit 1
+          done
+      - name: Check launch-agent plist
+        run: plutil -lint launchd/*.plist
+      - name: Analyze native helpers
+        run: |
+          for source in bin/*.c; do
+            /usr/bin/clang --analyze -std=c11 -Wall -Wextra -Werror \
+              -mmacosx-version-min=12.0 -Xanalyzer -analyzer-werror \
+              "$source" -o "$RUNNER_TEMP/$(basename "$source").plist" || exit 1
+          done
+      - name: Run offline regression fixtures
+        # Groups are checked against full discovery before every run; new
+        # files cannot silently disappear from this matrix.
+        run: python3 scripts/run-security-tests.py "${{ matrix.group }}"

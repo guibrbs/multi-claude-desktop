@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-17",
+  "kind": "sanitized_first_gui_launch_observation",
+  "implementation_commit": "b938c7dcd90d755aa1457c0118bb7884440a082c",
+  "toolset_manifest_sha256": "361347452b1add9d5ff35a32d36f32d7c7871a6a956f5c53b892d44741e9e674",
+  "source_version": "2.42304.0",
+  "electron_framework_declared_version": "44.7.2",
+  "architecture": "arm64",
+  "environment": "existing_macos_user_session",
+  "extra_os_user_created": false,
+  "live_preparation": {
+    "completed": true,
+    "process_observation": "production_native_guards",
+    "source_identity_nested_gatekeeper": "passed",
+    "toolset_install_and_verify": "passed",
+    "duo_build_full_content_and_nested_signature": "passed",
+    "original_critical_bytes_unchanged_after_preparation": true,
+    "legacy_configuration_unchanged": true,
+    "desktop_and_code_directories": "new_and_distinct",
+    "legacy_personal_and_trabalho": "moved_to_trash_at_user_request",
+    "legacy_profiles_removed": false
+  },
+  "first_launch": {
+    "actor": "user_via_finder",
+    "vendor_executable_launched": true,
+    "keychain_prompt": {
+      "observation_source": "user_report",
+      "entry_label": "Claude Safe Storage",
+      "requested_macos_password": true,
+      "user_reported_action": "deny",
+      "secret_value_read_by_auditor": false,
+      "access_granted_by_auditor": false
+    },
+    "ui_observation": "Claude sign-in screen; no account connected",
+    "sign_in_completed": false,
+    "original_launched_during_gui_validation": false
+  },
+  "metadata": {
+    "official_bundle_name": "Claude",
+    "duo_bundle_name": "Claude",
+    "duo_display_name": "Claude Duo",
+    "duo_identifier": "com.guibrbs.claude-duo.lab",
+    "official_and_duo_asar_sha256": "bfa22ac393906762fa04b9607ff202907405b089c1ae7db257159202f31bb3d0",
+    "helper_names_preserved": true
+  },
+  "static_analysis": {
+    "provider": "REA",
+    "evidence_id": "ev_af1ce70d6f6c54ab59e6a5ecc002883605013375b3576a69e33a4913d504cd49",
+    "parent_evidence_id": "ev_06d889125e69de79245f75f2288b98b7fd8f3431f1dd58a62207e7a6f8f5bab5",
+    "application_coverage": "partial",
+    "semantic_coverage": "partial",
+    "limitations": ["memory_budget", "per_source_timeout", "semantic_graph_and_result_budget", "static_relationships_do_not_prove_runtime_behavior"],
+    "unpacked_binding_integrity": {
+      "member": "node_modules/@ant/claude-native/claude-native-binding.node",
+      "declared_sha256": "3290fcc12a915411720ffd4af7a7185889ee35df1c1e4aaafcd91b0e6f9898ad",
+      "observed_sha256_in_both_apps": "6a53c1f9f5cf44e190e892de6b03c1ff6983da4d9d600958ff366079412ead69",
+      "policy": "record-and-continue",
+      "mismatch_cause": "not_established"
+    }
+  },
+  "gui_results": {
+    "G01": {"result": "INCONCLUSIVO", "blocked_by": "KC01"},
+    "G11": {"result": "INCONCLUSIVO", "blocked_by": "KC01"},
+    "remaining_cases": "NAO_EXECUTADO"
+  },
+  "release_gate": {
+    "finding": "KC01",
+    "status": "blocked_pending_credential_namespace_design_and_validation",
+    "account_independence_established": false,
+    "data_theft_established": false,
+    "daily_use_approved": false
+  }
+}

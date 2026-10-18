@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "scope": "Opt-in private user Applications and preparation for graphical original + Duo validation. No graphical compatibility or account-isolation claim.",
+  "offline": {
+    "result": "passed",
+    "tests": 145,
+    "duration_seconds": 128.049,
+    "group_counts": {
+      "profiles": 61,
+      "storage": 59,
+      "toolsets": 25
+    },
+    "new_private_app_cases": [
+      "test_user_apps_build_verification_and_recovery_preserve_system_apps",
+      "test_user_apps_cache_cleanup_preserves_account_data_and_system_directory",
+      "test_user_apps_maintenance_uses_one_private_kernel_lock",
+      "test_apps_directive_is_data_and_rejects_late_duplicate_or_arbitrary_paths",
+      "test_user_apps_missing_file_alias_or_nonprivate_mode_is_refused_without_changes",
+      "test_user_apps_rechecks_acl_and_ancestor_permissions_before_maintenance",
+      "test_apps_location_ignores_inherited_overrides_and_preserves_default_binding",
+      "test_moving_a_system_copy_to_user_apps_requires_a_reviewed_rebuild"
+    ],
+    "log_sha256": "9ee0f2c5c6f302b7deaf2c040fb3937dd9c82ee38f413ef4f501f5f6eed3622d"
+  },
+  "static_checks": {
+    "bash_syntax": "passed",
+    "launch_agent_plist": "passed",
+    "clang_analyzers": 4,
+    "analyzer_result": "passed without diagnostics",
+    "local_documentation_links": "passed"
+  },
+  "real_source_scratch": {
+    "time_utc": "2026-10-17T23:34:24.589377+00:00",
+    "result": "passed",
+    "source_app_version": "2.42304.0",
+    "architecture": "arm64",
+    "macos": "27.0",
+    "checks": [
+      {
+        "name": "original_identity",
+        "exit": 0,
+        "expected_exit": 0,
+        "passed": true
+      },
+      {
+        "name": "original_nested",
+        "exit": 0,
+        "expected_exit": 0,
+        "passed": true
+      },
+      {
+        "name": "original_gatekeeper",
+        "exit": 0,
+        "expected_exit": 0,
+        "passed": true
+      },
+      {
+        "name": "build_duo",
+        "exit": 0,
+        "expected_exit": 0,
+        "passed": true
+      },
+      {
+        "name": "verify_duo",
+        "exit": 0,
+        "expected_exit": 0,
+        "passed": true
+      },
+      {
+        "name": "duo_nested",
+        "exit": 0,
+        "expected_exit": 0,
+        "passed": true
+      },
+      {
+        "name": "default_desktop_reserved",
+        "exit": 1,
+        "expected_exit": 1,
+        "passed": true
+      },
+      {
+        "name": "original_identity_after",
+        "exit": 0,
+        "expected_exit": 0,
+        "passed": true
+      }
+    ],
+    "source_critical_files_unchanged": true,
+    "scope": "Actual source identity/nested/Gatekeeper and isolated original-copy Duo build/content verification in private user Applications. Shell HOME references redirected only in scratch source fixtures; native lifecycle fixture only. Desktop lifecycle observations simulated; LaunchServices registration disabled. No vendor executable launched or real profile copied.",
+    "vendor_executable_launched": false,
+    "claude_credentials_accessed": false,
+    "installed_apps_or_profiles_modified": false
+  },
+  "tested_code_sha256": {
+    "bin/claude-apps-refresh.sh": "9442fc343a46073affc7b40089a0b7b2b98b3537527b92f9eb88474a10f20013",
+    "bin/claude-build-worker.sh": "553c8cce483a2a83ad3af2121b26b8a91fbaa62ddd2f5c5bb7e56dccd1c8768d",
+    "bin/claude-cache-worker.sh": "720ffad3b8f822ec89a45d8daf9c6bd72ecd276a0a6a5bd7bd2b77fccc26a84d",
+    "bin/claude-checkpoint-worker.sh": "8e5c076aec1ddfa3fcb354ac0e65843b99fb070218fdbf78b25bc48ad1710443",
+    "bin/claude-checkpoint.c": "10fd853f589ee930e85fbc471fa824009490fa1e95bd4b73a4f2bc5c1c642309",
+    "bin/claude-clear-caches.sh": "e2584a0416131c714a48db0257cf7e71da4cb818ccf04895ee74edd248f9e29d",
+    "bin/claude-instance-check.sh": "1bc36cf306d5c0f3f78df7518b19f6f37c9cd10b7f35663e9a9cc343d870ffdb",
+    "bin/claude-instances-common.sh": "b7ad1d6dcbee216799c603a794ea00af60b5d1f4f570e53d22836f1173c4f723",
+    "bin/claude-integrity.c": "8b082706ac28b8a73aa0d9726f02c215b58b49d6a2f8dea7995e2d58a46dedf6",
+    "bin/claude-maintenance.h": "2852e1efddf6be7e4155574f0a9e7becfed5263e1f31eba50b60a75d71d106e7",
+    "bin/claude-profile-checkpoint.sh": "f0090cf5c9b787acc734e10b5e99cdd71b88f3249df7ab421218b4fe66cba1cc",
+    "bin/claude-recolor-icon.sh": "99dc638a359b5f91299cf2c446a575b56050dcab6347a8e0d8b3fe662fd65ae6",
+    "bin/claude-recolor-icon.swift": "55fb1aafdfbd38690cf63c0e9d43b052acbb6e858b79d28ddcd8938a681dbb64",
+    "bin/claude-stale-check.sh": "c623312c0c8480c737b87ac40c8999421d22e7302fac756317371c0c2edf7ce5",
+    "bin/claude-toolset.c": "d6e2bc24ccbbd28c1279713a74e438a7770df85586b8b482898943cfa050818a",
+    "bin/claude-toolset.sh": "cab5dc186dc33ca538d49a20eb39948c171ebb02640fef0ec76cd19a5fa236b8",
+    "bin/claude-transaction.c": "445451bb07c9f7b10a9138fc401ee3d00661351c3ad3d97a39c7c411b1d7fc22"
+  },
+  "test_source_sha256": {
+    "tests/test_hardening.py": "00b690853668670ae7ac650c1bf17c8a7f3522c824f2acfc8ec60fc85a5549a6"
+  },
+  "declared_authentication": "email login link; no SSO in initial scope",
+  "graphical_tests": "not run",
+  "standard_macos_test_account_created": false,
+  "configuration_importer": "proposal only; not implemented",
+  "remaining_limits": [
+    "Ad-hoc clone signing does not preserve Anthropic identity/privileges.",
+    "Same-user apps remain able to access data readable by that user.",
+    "Maintenance locks are per selected application directory, not global profile locks across roots.",
+    "Changing application location does not migrate or disable existing copies.",
+    "Actual test-account preparation, email-link routing, two-account Code identity and session continuity remain unverified.",
+    "No real profile, Keychain, credential or existing configuration was copied."
+  ]
+}

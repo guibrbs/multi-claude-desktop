@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "c4b8a044e9944302dbe935ce079c3ba087f94af6",
+  "source_app_version": "2.42304.0",
+  "methodology": {
+    "configuration": "Existing regression fixture harness; --list checks for environment and path acceptance. No system directory mutations.",
+    "inheritance_and_arguments": "Generated launcher started only a harmless fixture shell child with an invented API-key sentinel. No Claude requests or real credentials.",
+    "atomic_swap": "renamex_np(RENAME_SWAP) on two temporary fixture directories only; not a crash or power-loss test.",
+    "metadata": "Entitlement key names and Boolean values only; no access-group values, credentials or account data collected.",
+    "provenance": "New disposable clone of a previous audit copy; inert JS marker added and outer bundle re-signed ad hoc, then current --verify run outside restricted sandbox. Marker never executed."
+  },
+  "fixture_observations": {
+    "config_accepts_ELECTRON_RUN_AS_NODE": true,
+    "config_accepts_ANTHROPIC_BASE_URL": true,
+    "config_accepts_ANTHROPIC_API_KEY": true,
+    "fixture_child_inherits_api_key_sentinel": true,
+    "launcher_forwards_no_sandbox": true,
+    "config_accepts_nested_desktop_profiles": true,
+    "config_accepts_cross_desktop_code_overlap": true,
+    "config_accepts_system_directory": true,
+    "rename_swap_fixture": {
+      "exit": 0,
+      "errno": 0,
+      "left_after": "new",
+      "right_after": "old",
+      "flag_source": "macOS SDK sys/stdio.h RENAME_SWAP=0x2",
+      "scope": "fixture directories only; no crash-durability claim"
+    }
+  },
+  "signing_observations": {
+    "Claude": {
+      "metadata_exit": 0,
+      "entitlement_keys": [
+        "com.apple.application-identifier",
+        "com.apple.developer.team-identifier",
+        "com.apple.security.automation.apple-events",
+        "com.apple.security.cs.allow-jit",
+        "com.apple.security.device.audio-input",
+        "com.apple.security.device.bluetooth",
+        "com.apple.security.device.camera",
+        "com.apple.security.device.print",
+        "com.apple.security.device.usb",
+        "com.apple.security.personal-information.location",
+        "com.apple.security.personal-information.photos-library",
+        "com.apple.security.virtualization",
+        "keychain-access-groups"
+      ],
+      "boolean_entitlements": {
+        "com.apple.security.automation.apple-events": true,
+        "com.apple.security.cs.allow-jit": true,
+        "com.apple.security.device.audio-input": true,
+        "com.apple.security.device.bluetooth": true,
+        "com.apple.security.device.camera": true,
+        "com.apple.security.device.print": true,
+        "com.apple.security.device.usb": true,
+        "com.apple.security.personal-information.location": true,
+        "com.apple.security.personal-information.photos-library": true,
+        "com.apple.security.virtualization": true
+      },
+      "non_boolean_values": "not collected"
+    },
+    "Claude Trabalho": {
+      "metadata_exit": 0,
+      "entitlement_keys": [],
+      "boolean_entitlements": {},
+      "non_boolean_values": "not collected"
+    },
+    "scratch_extra_resource_after_adhoc_resign": {
+      "resource": "Contents/Resources/audit-unexpected.js",
+      "resign_exit": 0,
+      "verify_exit": 0,
+      "verify_stdout": "Claude Audit: verified (local signature; not an Anthropic-signed copy)",
+      "meaning": "Internal signature validity and expected launcher do not prove provenance of all bundle resources. Marker never executed."
+    }
+  },
+  "claims_not_established": [
+    "Two-account GUI authentication/SSO independence",
+    "Safe schema rollback after opening a newer app",
+    "Crash/power-loss durability",
+    "Native unchanged-app launch compatibility with Claude accounts",
+    "Remote exploit or credential theft"
+  ],
+  "production_changes": false
+}

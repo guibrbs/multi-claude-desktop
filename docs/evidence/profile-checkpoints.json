@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "time_utc": "2026-10-17T04:51:23.555351+00:00",
+  "baseline_commit": "b62bf0924b8ab5f1bb1664c7e696da0c6e43ef30",
+  "platform": {
+    "architecture": "arm64",
+    "macos": "27.0"
+  },
+  "offline_suite": {
+    "result": "passed",
+    "count": 85,
+    "hardening_tests": 46,
+    "native_transaction_tests": 14,
+    "native_checkpoint_tests": 18,
+    "checkpoint_policy_tests": 7,
+    "scope": "Disposable fixtures only; no Claude executable or real profile/account."
+  },
+  "native_checkpoint_results": {
+    "pair_content_and_private_permissions_verified": true,
+    "source_bytes_inode_mode_mtime_ctime_preserved": true,
+    "wrong_profile_or_build_binding_refused": true,
+    "source_mutation_or_root_replacement_refused": true,
+    "sigkill_during_copy_or_prepared_stays_unpublished": true,
+    "sigkill_after_publication_remains_verifiable": true,
+    "concurrent_destination_not_overwritten": true,
+    "unsupported_atomic_operation_has_no_fallback": true,
+    "partial_malformed_or_extra_manifest_bytes_refused": true,
+    "tampering_and_extra_entries_refused": true,
+    "symlinks_hardlinks_special_files_acls_xattrs_unsafe_modes_refused": true,
+    "depth_limit_fails_without_crash_or_publication": true,
+    "production_build_ignores_test_injection_variables": true,
+    "unknown_process_or_open_file_observation_refused": true,
+    "observer_without_own_probe_visibility_refused": true,
+    "cache_rebuild_checkpoint_share_kernel_lock": true
+  },
+  "real_file_observer": {
+    "result": "passed",
+    "checks": [
+      {
+        "name": "synthetic_idle_pair_real_lsof_create",
+        "exit": 0,
+        "observer_probe_refused": false
+      },
+      {
+        "name": "published_pair_verify",
+        "exit": 0
+      },
+      {
+        "name": "real_external_synthetic_handle_blocks_checkpoint",
+        "passed": true,
+        "no_new_pending_or_published_checkpoint": true
+      }
+    ],
+    "scope": "Invented disposable profiles and mock app/signature/ps; actual native helpers, lsof and a separate synthetic file-holder process."
+  },
+  "additional_checks": {
+    "bash_syntax": "passed",
+    "launch_agent_plist": "passed",
+    "clang_static_analyzer": "no_diagnostics",
+    "git_diff_check": "passed"
+  },
+  "tested_code_sha256": {
+    "bin/claude-apps-refresh.sh": "f0ed919efd039d0904c20edf5b92c33f7ce781bf3ee06505867ae533cff8c0e0",
+    "bin/claude-build-worker.sh": "11168b70f67ef8b9b5a73874fb6294e4936267bfdf65e0641e6e91c3e1430032",
+    "bin/claude-cache-worker.sh": "6caf0a12b08de4bf34ca247c333d518b6126e6972aed5e2690bb3dcf6ca60398",
+    "bin/claude-checkpoint-worker.sh": "5d4edbbed16f2c3035cc0884affec8707bd76ccbb97b8f644c670e0d1242e7ff",
+    "bin/claude-checkpoint.c": "10fd853f589ee930e85fbc471fa824009490fa1e95bd4b73a4f2bc5c1c642309",
+    "bin/claude-clear-caches.sh": "9964250a3e761f136ba32cf986c51d0deffedf485ad51e9c1d75f7cf1b338abb",
+    "bin/claude-instance-check.sh": "b0faccbc43a758010cf2a2d2d7ee2ea0008ab7f94520fb99d443b3bb8795a27a",
+    "bin/claude-instances-common.sh": "a970f6eda96ae52ae09031b3292d76225d88dfdfc66478604a0198fcd4b46ff0",
+    "bin/claude-profile-checkpoint.sh": "bd9fe59fefe18fd7c63b7efe6b053eb4e646fbbe14f45a372fbf087c21095e51",
+    "bin/claude-recolor-icon.sh": "95ad7aafcdef7bb388a60f02585f1a6e8fe2eb815ff66218fa67f7655799378a",
+    "bin/claude-recolor-icon.swift": "55fb1aafdfbd38690cf63c0e9d43b052acbb6e858b79d28ddcd8938a681dbb64",
+    "bin/claude-stale-check.sh": "481244160f7017c3a987c40d0edb120264c2e73184898043970889337d799809",
+    "bin/claude-transaction.c": "d36220b0028e8778cb0c61176455f40c471502fb642f4fb0cdac790878b13d77"
+  },
+  "claude_credentials_accessed": false,
+  "vendor_executable_launched": false,
+  "installed_apps_or_profiles_modified": false,
+  "not_established": [
+    "Point-in-time or application-level database consistency",
+    "Complete metadata-aware backup for real Code/Cowork profiles",
+    "Keychain, TCC, external project/location backup",
+    "Restore/schema/downgrade compatibility",
+    "Power-loss or hardware-cache durability",
+    "GUI Code two-account authentication/SSO/session continuity",
+    "Isolation from external/same-user writers, administrators or root",
+    "Encrypted backup or authenticated manifest",
+    "Automatic pruning, migration or restore"
+  ]
+}
